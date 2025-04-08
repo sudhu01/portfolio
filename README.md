@@ -21,25 +21,25 @@ Want to run the site locally? Follow these simple steps:
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/your-username/your-portfolio.git
-cd your-portfolio
+```bash```
+```git clone https://github.com/your-username/your-portfolio.git```
+```cd your-portfolio```
 
-2. Install Dependencies
+#### 2. Install Dependencies
 Make sure you have Node.js installed (preferably v16 or later).
 
 Then, install all the required packages:
 
-bash
-Copy
-Edit
-npm install
+```bash```
+```Copy```
+```Edit```
+```npm install```
 
-3. Run the Development Server
-bash
-Copy
-Edit
-npm run dev
+###3. Run the Development Server
+```bash```
+```Copy```
+```Edit```
+```npm run dev```
 Now open http://localhost:3000 in your browser and you should see the site up and running!
 
 
