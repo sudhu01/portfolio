@@ -29,8 +29,8 @@ Want to run the site locally? Follow these simple steps:
 
 ### 1. Clone the Repository
 
-```git clone https://github.com/your-username/your-portfolio.git```
-```cd your-portfolio```
+```git clone https://github.com/sudhu01/portfolio.git```
+```cd portfolio```
 
 #### 2. Install Dependencies
 Make sure you have Node.js installed (preferably v16 or later).
