@@ -5,8 +5,18 @@ type Props = {
   username: string;
 };
 
-async function getContributions(username: string) {
-  const token = process.env.NEXT_PUBLIC_GITHUB_PAT;
+// Returns a date -> contribution count map, or an empty map when GitHub can't
+// be reached. The contributions grid is decorative, so a missing/expired token
+// degrades to an empty year rather than failing the prerender of `/`.
+async function getContributionCounts(
+  username: string
+): Promise<Record<string, number>> {
+  const token = process.env.GITHUB_PAT ?? process.env.NEXT_PUBLIC_GITHUB_PAT;
+
+  if (!token) {
+    console.warn("[githubContributions] GITHUB_PAT is not set — rendering an empty grid.");
+    return {};
+  }
 
   const query = `
     query($userName:String!, $from:DateTime!, $to:DateTime!) {
@@ -31,37 +41,57 @@ async function getContributions(username: string) {
   const to = new Date();
   to.setHours(23, 59, 59, 999);
 
-  const response = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      query,
-      variables: {
-        userName: username,
-        from: from.toISOString(),
-        to: to.toISOString(),
+  try {
+    const response = await fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    }),
-  });
+      body: JSON.stringify({
+        query,
+        variables: {
+          userName: username,
+          from: from.toISOString(),
+          to: to.toISOString(),
+        },
+      }),
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (result.errors) {
-    throw new Error(`GitHub API error: ${result.errors[0].message}`);
-  }
+    // An auth failure comes back as `{ message: "Bad credentials" }` — no
+    // `data` and no `errors` — so check the shape, not just `result.errors`.
+    const weeks =
+      result?.data?.user?.contributionsCollection?.contributionCalendar?.weeks;
 
-  const map: Record<string, number> = {};
-
-  result.data.user.contributionsCollection.contributionCalendar.weeks.forEach(
-    (week: { contributionDays: Array<{ date: string; contributionCount: number }> }) => {
-      week.contributionDays.forEach((day) => {
-        map[day.date] = day.contributionCount;
-      });
+    if (!response.ok || !Array.isArray(weeks)) {
+      console.warn(
+        `[githubContributions] GitHub API returned no data (${response.status}): ` +
+          `${result?.errors?.[0]?.message ?? result?.message ?? "unknown error"}`
+      );
+      return {};
     }
-  );
+
+    const map: Record<string, number> = {};
+
+    weeks.forEach(
+      (week: { contributionDays: Array<{ date: string; contributionCount: number }> }) => {
+        week.contributionDays.forEach((day) => {
+          map[day.date] = day.contributionCount;
+        });
+      }
+    );
+
+    return map;
+  } catch (error) {
+    console.warn("[githubContributions] GitHub API request failed:", error);
+    return {};
+  }
+}
+
+async function getContributions(username: string) {
+  const map = await getContributionCounts(username);
 
   const days = eachDayOfInterval({
     start: subDays(new Date(), 365),
