@@ -4,21 +4,21 @@ import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
 /**
- * Appears once the Projects section scrolls up into view and stays visible
+ * Appears once the Stack section scrolls up into view and stays visible
  * for everything below it.
  *
- * The trigger is measured against the viewport, not the document: Projects
- * sits near the end of the page, so a document-offset threshold would sit
- * below the maximum scroll position and could never be reached.
+ * The trigger is measured against the viewport, not the document: Stack
+ * sits in the lower half of the page, so a document-offset threshold could
+ * land below the maximum scroll position and never be reached.
  */
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const update = () => {
-      const projects = document.getElementById("projects");
+      const stack = document.getElementById("stack");
 
-      if (!projects) {
+      if (!stack) {
         // Fall back to a viewport's worth of scroll if the section is missing
         setVisible(window.scrollY >= window.innerHeight);
         return;
@@ -26,7 +26,7 @@ export default function ScrollToTop() {
 
       // Fires once the heading has risen past 60% of the viewport height
       setVisible(
-        projects.getBoundingClientRect().top <= window.innerHeight * 0.6
+        stack.getBoundingClientRect().top <= window.innerHeight * 0.6
       );
     };
 

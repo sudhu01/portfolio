@@ -1,11 +1,14 @@
 export type NavItem = {
   title: string;
   href: string;
+  /** Opens in a new tab; set for links that leave the site. */
+  external?: boolean;
 };
 
 /** Items rendered in the sticky site header. */
 export const MAIN_NAV: NavItem[] = [
-  { title: "Projects", href: "#projects" },
+  { title: "Aspirenet", href: "https://www.aspirenet.app/", external: true },
+  { title: "Testimonials", href: "/testimonials" },
 ];
 
 /** Every in-page section, used to populate the command menu. */
@@ -13,9 +16,10 @@ export const SECTION_NAV: NavItem[] = [
   { title: "Hello", href: "#hello" },
   { title: "About", href: "#about" },
   { title: "Contributions", href: "#contributions" },
-  { title: "Projects", href: "#projects" },
   { title: "Stack", href: "#stack" },
   { title: "Experience", href: "#experience" },
+  { title: "Projects", href: "#projects" },
+  { title: "Education", href: "#education" },
 ];
 
 export type SocialName = "github" | "x" | "linkedin" | "huggingface";

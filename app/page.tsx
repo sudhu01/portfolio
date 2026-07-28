@@ -2,11 +2,13 @@
 import ProfileFrame from "@/components/profileFrame";
 import ProfileOverview from "@/components/profileOverview";
 import StackTags from "@/components/stackTags";
+import EducationList from "@/components/educationList";
 import ExperienceList from "@/components/experienceList";
 import ProjectsList from "@/components/projectsList";
 import GithubContributions from "@/components/githubContributions";
 import SiteHeader from "@/components/siteHeader";
 import SocialLinks from "@/components/socialLinks";
+import FullBleed from "@/components/fullBleed";
 
 export default function Page() {
 
@@ -91,28 +93,8 @@ export default function Page() {
                 <GithubContributions username="sudhu01" />
               </div>
 
-              {/* Projects */}
-              <FullBleed className="mt-6 h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
-              <FullBleed className="border-b border-(--pattern)">
-                <div className="mx-auto max-w-7xl px-10 py-2 md:px-16">
-                  <h2
-                    id="projects"
-                    data-section
-                    className="text-2xl font-semibold tracking-tight md:text-3xl"
-                  >
-                    Projects
-                  </h2>
-                </div>
-              </FullBleed>
-
-              {/* Flush against the heading rule above and the band below, so the
-                  list's own rules meet the section borders */}
-              <div className="-mx-4 md:-mx-6">
-                <ProjectsList />
-              </div>
-
               {/* Tech stack */}
-              <FullBleed className="h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
+              <FullBleed className="mt-6 h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
               <FullBleed className="border-b border-(--pattern)">
                 <div className="mx-auto max-w-7xl px-10 py-2 md:px-16">
                   <h2
@@ -149,6 +131,46 @@ export default function Page() {
                 <ExperienceList />
               </div>
 
+              {/* Projects */}
+              <FullBleed className="h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
+              <FullBleed className="border-b border-(--pattern)">
+                <div className="mx-auto max-w-7xl px-10 py-2 md:px-16">
+                  <h2
+                    id="projects"
+                    data-section
+                    className="text-2xl font-semibold tracking-tight md:text-3xl"
+                  >
+                    Projects
+                  </h2>
+                </div>
+              </FullBleed>
+
+              {/* Flush against the heading rule above and the band below, so the
+                  list's own rules meet the section borders */}
+              <div className="-mx-4 md:-mx-6">
+                <ProjectsList />
+              </div>
+
+              {/* Education */}
+              <FullBleed className="h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
+              <FullBleed className="border-b border-(--pattern)">
+                <div className="mx-auto max-w-7xl px-10 py-2 md:px-16">
+                  <h2
+                    id="education"
+                    data-section
+                    className="text-2xl font-semibold tracking-tight md:text-3xl"
+                  >
+                    Education
+                  </h2>
+                </div>
+              </FullBleed>
+
+              {/* Flush against the heading rule above and the band below, so the
+                  list's own rules meet the section borders */}
+              <div className="-mx-4 md:-mx-6">
+                <EducationList />
+              </div>
+
               {/* Closing diagonal band */}
               <FullBleed className="mb-6 h-6 border-y border-(--pattern) bg-[repeating-linear-gradient(315deg,var(--pattern)_0,var(--pattern)_1px,transparent_1px,transparent_50%)] bg-size-[8px_8px] md:h-10 md:bg-size-[10px_10px]" />
 
@@ -156,24 +178,6 @@ export default function Page() {
           </div>
         </section>
       </main>
-    </div>
-  );
-}
-
-/**
- * Full-bleed wrapper: lets a decorative band span the entire viewport width
- * while living inside the centered, padded content column.
- */
-function FullBleed({
-  className = "",
-  children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className={`relative left-1/2 w-screen -translate-x-1/2 ${className}`}>
-      {children}
     </div>
   );
 }

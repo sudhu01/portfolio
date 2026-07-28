@@ -8,8 +8,10 @@ import { useTheme } from "next-themes";
 import {
   ArrowUpRight,
   Box,
+  BriefcaseBusiness,
   Copy,
   CornerDownLeft,
+  GraduationCap,
   Layers,
   Mail,
   Monitor,
@@ -37,6 +39,8 @@ const SECTION_ICONS: Record<string, React.ReactNode> = {
   "#about": <User />,
   "#stack": <Layers />,
   "#contributions": <Sparkles />,
+  "#education": <GraduationCap />,
+  "#experience": <BriefcaseBusiness />,
   "#projects": <Box />,
 };
 
@@ -86,7 +90,11 @@ export default function CommandMenu() {
   const goToSection = useCallback((href: string) => {
     setOpen(false);
     const el = document.getElementById(href.slice(1));
-    if (!el) return;
+    // Sections only exist on the home page — from anywhere else, navigate there
+    if (!el) {
+      window.location.href = `/${href}`;
+      return;
+    }
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     window.history.replaceState(null, "", href);
   }, []);

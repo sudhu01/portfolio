@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image, { type StaticImageData } from "next/image";
-import { BriefcaseBusiness, ChevronDown } from "lucide-react";
+import { BriefcaseBusiness, ChevronDown, Rocket, Sparkles } from "lucide-react";
 import { differenceInMonths, parse } from "date-fns";
 import { cn } from "@/lib/utils";
 import piramalLogo from "@/public/piramal_logo.svg";
@@ -11,6 +11,8 @@ import drTechnologiesLogo from "@/public/drtechnologies_logo.svg";
 type ExperiencePosition = {
   id: string;
   title: string;
+  /** Defaults to a briefcase when the role has nothing more specific. */
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   employmentType?: string;
   /** MM.YYYY */
   startDate: string;
@@ -25,6 +27,9 @@ type Experience = {
   id: string;
   companyName: string;
   companyWebsite: string;
+  location: string;
+  /** e.g. On-site / Hybrid / Remote — rendered in brackets after the location. */
+  locationType?: string;
   logo: StaticImageData;
   /** Monochrome white logo — flipped to black on light backgrounds. */
   invertLogoOnLight?: boolean;
@@ -38,20 +43,30 @@ const EXPERIENCES: Experience[] = [
     id: "piramal-finance",
     companyName: "Piramal Finance",
     companyWebsite: "https://www.piramalfinance.com/",
+    location: "Bangalore, India",
     logo: piramalLogo,
     invertLogoOnLight: true,
     positions: [
       {
         id: "piramal-finance-1",
-        title: "Role title (placeholder)",
+        title: "AI Intern",
+        icon: Sparkles,
         startDate: "05.2026",
         endDate: "07.2026",
         description:
-          "Placeholder — replace with a short summary of what you worked on at Piramal Finance.",
+          "Helped develop and scale an internal JS-based MS Excel replacement tool with a built-in AI assistant.",
         bulletPoints: [
-          "Placeholder bullet — the project or system you shipped.",
-          "Placeholder bullet — the impact, scale or metric that mattered.",
-          "Placeholder bullet — the stack and tooling you used day to day.",
+          "Built a Node/TypeScript workbook-ingestion service for Akriti that streamed and parsed Excel files > 500 MB with a WASM parser",
+          "Implemented the query layer for Akriti's Gemini-based spreadsheet agent by translating validated user requests into Mongo aggregation pipelines",
+        ],
+        skills: [
+          "TypeScript",
+          "JavaScript",
+          "React",
+          "Node.js",
+          "Express.js",
+          "MongoDB",
+          "Gemini",
         ],
       },
     ],
@@ -60,19 +75,33 @@ const EXPERIENCES: Experience[] = [
     id: "dheerajreddy-technologies",
     companyName: "DheerajReddy Technologies Pvt Ltd",
     companyWebsite: "https://www.dheerajreddytechnologies.com/",
+    location: "Chennai, India",
     logo: drTechnologiesLogo,
     isCurrentEmployer: true,
     positions: [
       {
         id: "dheerajreddy-technologies-1",
-        title: "Role title (placeholder)",
+        title: "Co-Founder & Lead Engineer",
+        icon: Rocket,
         startDate: "12.2025",
         description:
-          "Placeholder — replace with a short summary of what you build at DheerajReddy Technologies.",
+          "Pretty much built the company's flagship product, Aspirenet all by myself.",
         bulletPoints: [
-          "Placeholder bullet — the product or feature you own.",
-          "Placeholder bullet — the impact, scale or metric that mattered.",
-          "Placeholder bullet — the stack and tooling you used day to day.",
+          "Developed Aspirenet's frontend, backend and database architecture from scratch (with Claude's help of course).",
+          "Scaled Aspirenet to serve the 5k+ users it currently has, with a 99.9% uptime",
+          "Built all of the AI features in Aspirenet, including the matchmaking system, AI strategy assistant and automated profile building.",
+        ],
+        skills: [
+          "TypeScript",
+          "Python",
+          "Node.js",
+          "Express.js",
+          "FastAPI",
+          "PostgreSQL",
+          "Prisma",
+          "Docker",
+          "AWS",
+          "Claude",
         ],
       },
     ],
@@ -127,6 +156,7 @@ function ExperiencePositionItem({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const duration = formatDuration(position.startDate, position.endDate);
+  const PositionIcon = position.icon ?? BriefcaseBusiness;
 
   return (
     <div className="relative">
@@ -135,18 +165,19 @@ function ExperiencePositionItem({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className={cn(
-          // `relative` also lifts the row above the dashed gutter, so the icon
-          // chip below masks the rule instead of being drawn over by it
+          // `relative` also lifts the row above the rail, so the icon chip
+          // below masks the rule instead of being drawn over by it
           "relative block w-full text-left",
-          // Hover plate starts past the dashed gutter, so the rule stays visible
-          "before:absolute before:-inset-y-1.5 before:right-0 before:left-7 before:-z-1 before:rounded-lg before:transition-colors",
+          // Hover plate starts past the rail, so the rule stays visible. It is
+          // flush with the row's top so the rail's crop can't clip it.
+          "before:absolute before:top-0 before:-bottom-1.5 before:right-0 before:left-7 before:-z-1 before:rounded-lg before:transition-colors",
           "hover:before:bg-zinc-200/40 dark:hover:before:bg-zinc-900/50",
         )}
       >
         <div className="mb-1 flex items-start gap-3">
-          {/* Opaque chip — masks the dashed gutter running behind it */}
+          {/* Opaque chip — masks the rail running behind it */}
           <div className="flex size-6 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-            <BriefcaseBusiness className="size-3.5" aria-hidden="true" />
+            <PositionIcon className="size-3.5" aria-hidden="true" />
           </div>
 
           <h4 className="flex-1 leading-6 font-medium text-balance">
@@ -214,20 +245,34 @@ function ExperiencePositionItem({
               <li key={point}>{point}</li>
             ))}
           </ul>
-
-          {position.skills && position.skills.length > 0 && (
-            <ul className="flex flex-wrap gap-1.5">
-              {position.skills.map((skill) => (
-                <li key={skill} className="flex">
-                  <span className="inline-flex items-center rounded-md border bg-zinc-50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground dark:bg-zinc-900">
-                    {skill}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       </div>
+
+      {/* Skills stay visible whether or not the role is expanded. The rail that
+          drops from the company logo lives here too, so its elbow is pinned to
+          the tag row by layout rather than by a guessed offset. */}
+      {position.skills && position.skills.length > 0 && (
+        <div className="flex items-start gap-2 pt-3">
+          {/* Rail + elbow. It is stretched far past the top of the list and
+              clipped by the positions container, which is how it reaches up
+              behind the role icon to the company logo. The 11px is half a tag
+              chip, so the elbow lands on the first row's centre line. */}
+          <span
+            className="pointer-events-none -mt-[9999px] ml-3 h-[calc(9999px+11px)] w-4 shrink-0 rounded-bl-sm border-b border-l border-(--pattern)"
+            aria-hidden
+          />
+
+          <ul className="flex flex-wrap gap-1.5">
+            {position.skills.map((skill) => (
+              <li key={skill} className="flex">
+                <span className="inline-flex items-center rounded-md border bg-zinc-50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground dark:bg-zinc-900">
+                  {skill}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -243,7 +288,7 @@ function ExperienceItem({
     /* The closing band supplies the final rule, so the last item drops its own */
     <div className="border-b border-border px-4 py-5 last:border-b-0 md:px-6">
       {/* Company */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3 sm:items-center">
         <div className="flex size-6 shrink-0 items-center justify-center select-none">
           <Image
             src={experience.logo}
@@ -257,33 +302,50 @@ function ExperienceItem({
           />
         </div>
 
-        <h3 className="text-lg/6 font-medium md:text-xl/6">
-          <a
-            href={experience.companyWebsite}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            {experience.companyName}
-          </a>
-        </h3>
+        {/* Name left, location right — they stack on narrow screens */}
+        <div className="flex min-w-0 flex-1 flex-col gap-x-3 gap-y-1 pr-1 sm:flex-row sm:items-baseline sm:justify-between">
+          <h3 className="text-lg/6 font-medium md:text-xl/6">
+            <a
+              href={experience.companyWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {experience.companyName}
+            </a>
+          </h3>
 
-        {experience.isCurrentEmployer && (
-          <span className="relative flex size-2.5 shrink-0 items-center justify-center">
-            <span className="sr-only">Current employer</span>
-            <span className="absolute inline-flex size-2.5 animate-ping rounded-full bg-emerald-500 opacity-50" />
-            <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
-          </span>
-        )}
+          <dl className="flex min-w-0 items-center gap-1.5 text-sm whitespace-nowrap text-muted-foreground">
+            <dt className="sr-only">Location</dt>
+            <dd className="truncate">{experience.location}</dd>
+
+            {experience.locationType && (
+              <>
+                <dt className="sr-only">Location type</dt>
+                <dd>({experience.locationType})</dd>
+              </>
+            )}
+
+            {experience.isCurrentEmployer && (
+              <>
+                <dt className="sr-only">Employment status</dt>
+                <dd>
+                  <span className="sr-only">Current</span>
+                  <span className="relative flex size-2.5 translate-y-px items-center justify-center">
+                    <span className="absolute inline-flex size-2.5 animate-ping rounded-full bg-emerald-500 opacity-50" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+                  </span>
+                </dd>
+              </>
+            )}
+          </dl>
+        </div>
       </div>
 
-      {/* Positions — the dashed gutter drops from the company logo's centre */}
-      <div className="relative mt-4 space-y-5">
-        <div
-          className="pointer-events-none absolute inset-y-0 left-3 w-px bg-[linear-gradient(to_bottom,var(--pattern)_4px,transparent_2px)] bg-size-[1px_6px] bg-repeat-y"
-          aria-hidden
-        />
-
+      {/* Positions. `overflow-hidden` crops each role's rail (see below) at this
+          box's top edge, which is the first role's icon — so the rail only ever
+          shows below an icon, never poking out above one. */}
+      <div className="mt-4 space-y-5 overflow-hidden">
         {experience.positions.map((position, i) => (
           <ExperiencePositionItem
             key={position.id}
